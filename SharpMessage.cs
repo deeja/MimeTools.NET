@@ -21,11 +21,10 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System.Collections;
-using System.IO;
-using System.Web;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Web;
 
 namespace anmar.SharpMimeTools
 {
@@ -127,11 +126,13 @@ namespace anmar.SharpMimeTools
         /// </remarks>
         public SharpMessage(Stream message, bool attachments, bool html, String path, String preferredtextsubtype)
         {
-            MimeTopLevelMediaType types = MimeTopLevelMediaType.text | MimeTopLevelMediaType.multipart | MimeTopLevelMediaType.message;
+            MimeTopLevelMediaType types = MimeTopLevelMediaType.text | MimeTopLevelMediaType.multipart |
+                                          MimeTopLevelMediaType.message;
             SharpDecodeOptions options = SharpDecodeOptions.None;
             if (attachments)
             {
-                types = types | MimeTopLevelMediaType.application | MimeTopLevelMediaType.audio | MimeTopLevelMediaType.image | MimeTopLevelMediaType.video;
+                types = types | MimeTopLevelMediaType.application | MimeTopLevelMediaType.audio |
+                        MimeTopLevelMediaType.image | MimeTopLevelMediaType.video;
                 options = options | SharpDecodeOptions.AllowAttachments;
             }
             if (html)
@@ -173,8 +174,11 @@ namespace anmar.SharpMimeTools
         /// <param name="html"><b>true</b> to allow HTML content; <b>false</b> to ignore the html content.</param>
         /// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
         /// <param name="preferredtextsubtype">A <see cref="System.String" /> specifying the subtype to select for text parts that contain aternative content (plain, html, ...). Specify the <b>null</b> reference to maintain the default behavior (prefer whatever the originator sent as the preferred part). If there is not a text part with this subtype, the default one is used.</param>
-        public SharpMessage(Stream message, MimeTopLevelMediaType types, bool html, String path, String preferredtextsubtype)
-            : this(message, types, ((html) ? SharpDecodeOptions.Default : SharpDecodeOptions.AllowAttachments), path, preferredtextsubtype)
+        public SharpMessage(Stream message, MimeTopLevelMediaType types, bool html, String path,
+                            String preferredtextsubtype)
+            : this(
+                message, types, ((html) ? SharpDecodeOptions.Default : SharpDecodeOptions.AllowAttachments), path,
+                preferredtextsubtype)
         {
         }
 
@@ -210,10 +214,13 @@ namespace anmar.SharpMimeTools
         {
             MimeTopLevelMediaType types;
             if ((options & SharpDecodeOptions.AllowAttachments) == SharpDecodeOptions.AllowAttachments)
-                types = MimeTopLevelMediaType.text | MimeTopLevelMediaType.multipart | MimeTopLevelMediaType.message | MimeTopLevelMediaType.application | MimeTopLevelMediaType.audio | MimeTopLevelMediaType.image | MimeTopLevelMediaType.video;
+                types = MimeTopLevelMediaType.text | MimeTopLevelMediaType.multipart | MimeTopLevelMediaType.message |
+                        MimeTopLevelMediaType.application | MimeTopLevelMediaType.audio | MimeTopLevelMediaType.image |
+                        MimeTopLevelMediaType.video;
             else
                 types = MimeTopLevelMediaType.text | MimeTopLevelMediaType.multipart | MimeTopLevelMediaType.message;
-            if (path != null && (options & SharpDecodeOptions.CreateFolder) != SharpDecodeOptions.CreateFolder && !Directory.Exists(path))
+            if (path != null && (options & SharpDecodeOptions.CreateFolder) != SharpDecodeOptions.CreateFolder &&
+                !Directory.Exists(path))
             {
                 path = null;
             }
@@ -228,9 +235,11 @@ namespace anmar.SharpMimeTools
         /// <param name="options"><see cref="anmar.SharpMimeTools.SharpDecodeOptions" /> to determine how to do the decoding (must be combined as a bit map).</param>
         /// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
         /// <param name="preferredtextsubtype">A <see cref="System.String" /> specifying the subtype to select for text parts that contain aternative content (plain, html, ...). Specify the <b>null</b> reference to maintain the default behavior (prefer whatever the originator sent as the preferred part). If there is not a text part with this subtype, the default one is used.</param>
-        public SharpMessage(Stream message, MimeTopLevelMediaType types, SharpDecodeOptions options, String path, String preferredtextsubtype)
+        public SharpMessage(Stream message, MimeTopLevelMediaType types, SharpDecodeOptions options, String path,
+                            String preferredtextsubtype)
         {
-            if (path != null && (options & SharpDecodeOptions.CreateFolder) != SharpDecodeOptions.CreateFolder && !Directory.Exists(path))
+            if (path != null && (options & SharpDecodeOptions.CreateFolder) != SharpDecodeOptions.CreateFolder &&
+                !Directory.Exists(path))
             {
                 path = null;
             }
@@ -368,7 +377,7 @@ namespace anmar.SharpMimeTools
             {
                 for (int i = 0, count = Attachments.Count; i < count; i++)
                 {
-                    SharpAttachment attachment = (SharpAttachment)Attachments[i];
+                    SharpAttachment attachment = Attachments[i];
                     if (attachment.ContentID != null)
                     {
                         String conid = SharpMimeTools.Rfc2392Url(attachment.ContentID);
@@ -376,8 +385,10 @@ namespace anmar.SharpMimeTools
                         {
                             if (_body.IndexOf("cid:" + conid) != -1)
                                 _body = _body.Replace("cid:" + conid, ReplaceUrlTokens(attachmentsurl, attachment));
-                            if (!String.IsNullOrEmpty(msgid) && _body.IndexOf(String.Format("mid:{0}/{1}", msgid, conid)) != -1)
-                                _body = _body.Replace(String.Format("mid:{0}/{1}", msgid, conid), ReplaceUrlTokens(attachmentsurl, attachment));
+                            if (!String.IsNullOrEmpty(msgid) &&
+                                _body.IndexOf(String.Format("mid:{0}/{1}", msgid, conid)) != -1)
+                                _body = _body.Replace(String.Format("mid:{0}/{1}", msgid, conid),
+                                                      ReplaceUrlTokens(attachmentsurl, attachment));
                             // No more references found, so nothing to do
                             if (_body.IndexOf("cid:") == -1 && _body.IndexOf("mid:") == -1)
                                 break;
@@ -398,17 +409,19 @@ namespace anmar.SharpMimeTools
             }
         }
 
-        private void ParseMessage(Stream stream, MimeTopLevelMediaType types, SharpDecodeOptions options, String preferredtextsubtype, String path)
+        private void ParseMessage(Stream stream, MimeTopLevelMediaType types, SharpDecodeOptions options,
+                                  String preferredtextsubtype, String path)
         {
             Attachments = new List<SharpAttachment>();
             using (SharpMimeMessage message = new SharpMimeMessage(stream))
             {
-                ParseMessage(message, types, (options & SharpDecodeOptions.AllowHtml) == SharpDecodeOptions.AllowHtml, options, preferredtextsubtype, path);
+                ParseMessage(message, types, (options & SharpDecodeOptions.AllowHtml) == SharpDecodeOptions.AllowHtml,
+                             options, preferredtextsubtype, path);
                 Headers = message.Header;
             }
             // find and decode uuencoded content if configured to do so (and attachments a allowed)
             if ((options & SharpDecodeOptions.UuDecode) == SharpDecodeOptions.UuDecode
-                   && (options & SharpDecodeOptions.AllowAttachments) == SharpDecodeOptions.AllowAttachments)
+                && (options & SharpDecodeOptions.AllowAttachments) == SharpDecodeOptions.AllowAttachments)
                 UuDecode(path);
             // Date
             _date = SharpMimeTools.parseDate(Headers.Date);
@@ -440,7 +453,8 @@ namespace anmar.SharpMimeTools
             }
         }
 
-        private void ParseMessage(SharpMimeMessage part, MimeTopLevelMediaType types, bool html, SharpDecodeOptions options, String preferredtextsubtype, String path)
+        private void ParseMessage(SharpMimeMessage part, MimeTopLevelMediaType types, bool html,
+                                  SharpDecodeOptions options, String preferredtextsubtype, String path)
         {
             if ((types & part.Header.TopLevelMediaType) != part.Header.TopLevelMediaType)
             {
@@ -457,9 +471,10 @@ namespace anmar.SharpMimeTools
                         if (part.Header.SubType == "rfc822")
                         {
                             // If NotRecursiveRfc822 option is set, handle part as an attachment
-                            if ((options & SharpDecodeOptions.NotRecursiveRfc822) == SharpDecodeOptions.NotRecursiveRfc822)
+                            if ((options & SharpDecodeOptions.NotRecursiveRfc822) ==
+                                SharpDecodeOptions.NotRecursiveRfc822)
                             {
-                                goto case anmar.SharpMimeTools.MimeTopLevelMediaType.application;
+                                goto case MimeTopLevelMediaType.application;
                             }
                         }
                         else
@@ -475,7 +490,9 @@ namespace anmar.SharpMimeTools
                         {
                             SharpMimeMessage item = part.GetPart(i - 1);
                             if ((types & part.Header.TopLevelMediaType) != part.Header.TopLevelMediaType
-                                || (!html && item.Header.TopLevelMediaType.Equals(MimeTopLevelMediaType.text) && item.Header.SubType.Equals("html"))
+                                ||
+                                (!html && item.Header.TopLevelMediaType.Equals(MimeTopLevelMediaType.text) &&
+                                 item.Header.SubType.Equals("html"))
                                 )
                             {
                                 continue;
@@ -486,13 +503,17 @@ namespace anmar.SharpMimeTools
                                 altenative = item;
                                 // We don't have to select body part based on subtype if not asked for, or not a text one
                                 // or it's already the preferred one
-                                if (preferredtextsubtype == null || item.Header.TopLevelMediaType != MimeTopLevelMediaType.text || (preferredtextsubtype != null && item.Header.SubType == preferredtextsubtype))
+                                if (preferredtextsubtype == null ||
+                                    item.Header.TopLevelMediaType != MimeTopLevelMediaType.text ||
+                                    (preferredtextsubtype != null && item.Header.SubType == preferredtextsubtype))
                                 {
                                     break;
                                 }
                                 // This one is preferred over the last part
                             }
-                            else if (preferredtextsubtype != null && item.Header.TopLevelMediaType == MimeTopLevelMediaType.text && item.Header.SubType == preferredtextsubtype)
+                            else if (preferredtextsubtype != null &&
+                                     item.Header.TopLevelMediaType == MimeTopLevelMediaType.text &&
+                                     item.Header.SubType == preferredtextsubtype)
                             {
                                 altenative = item;
                                 break;
@@ -502,7 +523,8 @@ namespace anmar.SharpMimeTools
                         {
                             // If message body as html is allowed and part has a Content-ID field
                             // add an anchor to mark this body part
-                            if (html && part.Header.Contains("Content-ID") && (options & SharpDecodeOptions.NamedAnchors) == SharpDecodeOptions.NamedAnchors)
+                            if (html && part.Header.Contains("Content-ID") &&
+                                (options & SharpDecodeOptions.NamedAnchors) == SharpDecodeOptions.NamedAnchors)
                             {
                                 // There is a previous text body, so enclose it in <pre>
                                 if (!HasHtmlBody && _body.Length > 0)
@@ -511,7 +533,8 @@ namespace anmar.SharpMimeTools
                                     HasHtmlBody = true;
                                 }
                                 // Add the anchor
-                                _body = String.Concat(_body, "<a name=\"", SharpMimeTools.Rfc2392Url(MessageID), "_", SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
+                                _body = String.Concat(_body, "<a name=\"", SharpMimeTools.Rfc2392Url(MessageID), "_",
+                                                      SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
                             }
                             ParseMessage(altenative, types, html, options, preferredtextsubtype, path);
                         }
@@ -538,7 +561,8 @@ namespace anmar.SharpMimeTools
                             else
                                 HasHtmlBody = true;
                         }
-                        if (html && part.Header.Contains("Content-ID") && (options & SharpDecodeOptions.NamedAnchors) == SharpDecodeOptions.NamedAnchors)
+                        if (html && part.Header.Contains("Content-ID") &&
+                            (options & SharpDecodeOptions.NamedAnchors) == SharpDecodeOptions.NamedAnchors)
                         {
                             HasHtmlBody = true;
                         }
@@ -548,9 +572,11 @@ namespace anmar.SharpMimeTools
                         }
                         // If message body is html and this part has a Content-ID field
                         // add an anchor to mark this body part
-                        if (HasHtmlBody && part.Header.Contains("Content-ID") && (options & SharpDecodeOptions.NamedAnchors) == SharpDecodeOptions.NamedAnchors)
+                        if (HasHtmlBody && part.Header.Contains("Content-ID") &&
+                            (options & SharpDecodeOptions.NamedAnchors) == SharpDecodeOptions.NamedAnchors)
                         {
-                            _body = String.Concat(_body, "<a name=\"", SharpMimeTools.Rfc2392Url(MessageID), "_", SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
+                            _body = String.Concat(_body, "<a name=\"", SharpMimeTools.Rfc2392Url(MessageID), "_",
+                                                  SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
                         }
                         if (HasHtmlBody && part.Header.SubType.Equals("plain"))
                         {
@@ -565,7 +591,7 @@ namespace anmar.SharpMimeTools
                         {
                             return;
                         }
-                        goto case anmar.SharpMimeTools.MimeTopLevelMediaType.application;
+                        goto case MimeTopLevelMediaType.application;
                     }
                     break;
                 case MimeTopLevelMediaType.application:
@@ -594,18 +620,14 @@ namespace anmar.SharpMimeTools
                         {
                             if (part.DumpBody(stream))
                             {
-                                if (stream != null && stream.CanSeek)
+                                if (stream.CanSeek)
                                     stream.Seek(0, SeekOrigin.Begin);
-                                attachment = new SharpAttachment(stream);
-                                if (part.Name != null)
-                                    attachment.Name = part.Name;
-                                else
-                                    attachment.Name = String.Concat("generated_", part.GetHashCode(), ".", part.Header.SubType);
-                                attachment.Size = stream.Length;
+                                attachment = new SharpAttachment(stream) {Name = GetName(part), Size = stream.Length};
                             }
                         }
                     }
-                    if (attachment != null && part.Header.SubType == "ms-tnef" && (options & SharpDecodeOptions.DecodeTnef) == SharpDecodeOptions.DecodeTnef)
+                    if (attachment != null && part.Header.SubType == "ms-tnef" &&
+                        (options & SharpDecodeOptions.DecodeTnef) == SharpDecodeOptions.DecodeTnef)
                     {
                         // Try getting attachments form a tnef stream
                         Stream stream = attachment.Stream;
@@ -652,10 +674,12 @@ namespace anmar.SharpMimeTools
                         attachment.MimeMediaSubType = part.Header.SubType;
                         // Store attachment's CreationTime
                         if (part.Header.ContentDispositionParameters.ContainsKey("creation-date"))
-                            attachment.CreationTime = SharpMimeTools.parseDate(part.Header.ContentDispositionParameters["creation-date"]);
+                            attachment.CreationTime =
+                                SharpMimeTools.parseDate(part.Header.ContentDispositionParameters["creation-date"]);
                         // Store attachment's LastWriteTime
                         if (part.Header.ContentDispositionParameters.ContainsKey("modification-date"))
-                            attachment.LastWriteTime = SharpMimeTools.parseDate(part.Header.ContentDispositionParameters["modification-date"]);
+                            attachment.LastWriteTime =
+                                SharpMimeTools.parseDate(part.Header.ContentDispositionParameters["modification-date"]);
                         if (part.Header.Contains("Content-ID"))
                             attachment.ContentID = part.Header.ContentID;
                         Attachments.Add(attachment);
@@ -666,9 +690,14 @@ namespace anmar.SharpMimeTools
             }
         }
 
+        private static string GetName(SharpMimeMessage part)
+        {
+            return part.Name ?? String.Concat("generated_", part.GetHashCode(), ".", part.Header.SubType);
+        }
+
         private String ReplaceUrlTokens(String url, SharpAttachment attachment)
         {
-            if (url == null || url.Length == 0 || url.IndexOf('[') == -1 || url.IndexOf(']') == -1)
+            if (string.IsNullOrEmpty(url) || url.IndexOf('[') == -1 || url.IndexOf(']') == -1)
                 return url;
             if (url.IndexOf("[MessageID]") != -1)
             {
@@ -678,7 +707,8 @@ namespace anmar.SharpMimeTools
             {
                 if (url.IndexOf("[ContentID]") != -1)
                 {
-                    url = url.Replace("[ContentID]", HttpUtility.UrlEncode(SharpMimeTools.Rfc2392Url(attachment.ContentID)));
+                    url = url.Replace("[ContentID]",
+                                      HttpUtility.UrlEncode(SharpMimeTools.Rfc2392Url(attachment.ContentID)));
                 }
                 if (url.IndexOf("[Name]") != -1)
                 {
@@ -709,7 +739,8 @@ namespace anmar.SharpMimeTools
                     if (stream == null)
                     {
                         // Found the start point of uuencoded content
-                        if (line.Length > 10 && line[0] == 'b' && line[1] == 'e' && line[2] == 'g' && line[3] == 'i' && line[4] == 'n' && line[5] == ' ' && line[9] == ' ')
+                        if (line.Length > 10 && line[0] == 'b' && line[1] == 'e' && line[2] == 'g' && line[3] == 'i' &&
+                            line[4] == 'n' && line[5] == ' ' && line[9] == ' ')
                         {
                             String name = Path.GetFileName(line.Substring(10));
                             // In-Memory decoding

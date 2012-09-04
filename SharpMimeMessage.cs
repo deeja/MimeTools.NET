@@ -22,21 +22,24 @@
 
 using System;
 using System.Collections;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 
 namespace anmar.SharpMimeTools
 {
-	/// <summary>
-	/// rfc 2045 entity
-	/// </summary>
-	public class SharpMimeMessage : IEnumerable, IDisposable {
-		private struct MessageInfo {
-			internal long start;
-			internal long start_body;
-			internal long end;
-			internal SharpMimeHeader header;
-			internal SharpMimeMessageCollection parts;
+    /// <summary>
+    /// rfc 2045 entity
+    /// </summary>
+    public class SharpMimeMessage : IEnumerable, IDisposable
+    {
+        private struct MessageInfo
+        {
+            internal readonly long start;
+            internal readonly long start_body;
+            internal long end;
+            internal readonly SharpMimeHeader header;
+            internal readonly SharpMimeMessageCollection parts;
+
             internal MessageInfo(SharpMimeMessageStream m, long start)
             {
                 this.start = start;
@@ -45,15 +48,15 @@ namespace anmar.SharpMimeTools
                 end = -1;
                 parts = new SharpMimeMessageCollection();
             }
-		}
+        }
 
         private readonly SharpMimeMessageStream message;
         private MessageInfo mi;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="SharpMimeMessage"/> class from a <see cref="System.IO.Stream"/>
-		/// </summary>
-		/// <param name="message"><see cref="System.IO.Stream" /> to read the message from</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SharpMimeMessage"/> class from a <see cref="System.IO.Stream"/>
+        /// </summary>
+        /// <param name="message"><see cref="System.IO.Stream" /> to read the message from</param>
         public SharpMimeMessage(Stream message)
         {
             this.message = new SharpMimeMessageStream(message);
@@ -76,10 +79,7 @@ namespace anmar.SharpMimeTools
         /// <returns></returns>
         public String Body
         {
-            get
-            {
-                return GetRawBody(false);
-            }
+            get { return GetRawBody(false); }
         }
 
         /// <summary>
@@ -121,10 +121,7 @@ namespace anmar.SharpMimeTools
         /// <returns></returns>
         public String Disposition
         {
-            get
-            {
-                return Header.ContentDispositionParameters["Content-Disposition"];
-            }
+            get { return Header.ContentDispositionParameters["Content-Disposition"]; }
         }
 
         /// <summary>
@@ -133,10 +130,7 @@ namespace anmar.SharpMimeTools
         /// <returns></returns>
         public SharpMimeHeader Header
         {
-            get
-            {
-                return mi.header;
-            }
+            get { return mi.header; }
         }
 
         /// <summary>
@@ -263,23 +257,23 @@ namespace anmar.SharpMimeTools
                 return mi.end - mi.start_body;
             }
         }
-		
+
         /// <summary>
-		/// Clears the parts references contained in this instance and calls the <b>Close</b> method in those parts.
-		/// </summary>
-		/// <remarks>This method does not close the underling <see cref="System.IO.Stream" /> used to create this instance.</remarks>
+        /// Clears the parts references contained in this instance and calls the <b>Close</b> method in those parts.
+        /// </summary>
+        /// <remarks>This method does not close the underling <see cref="System.IO.Stream" /> used to create this instance.</remarks>
         public void Close()
         {
             foreach (SharpMimeMessage part in mi.parts)
                 part.Close();
             mi.parts.Clear();
         }
-		
+
         /// <summary>
-		/// Dumps the body of this entity into a <see cref="System.IO.Stream"/>
-		/// </summary>
-		/// <param name="stream"><see cref="System.IO.Stream" /> where we want to write the body</param>
-		/// <returns><b>true</b> OK;<b>false</b> if write operation fails</returns>
+        /// Dumps the body of this entity into a <see cref="System.IO.Stream"/>
+        /// </summary>
+        /// <param name="stream"><see cref="System.IO.Stream" /> where we want to write the body</param>
+        /// <returns><b>true</b> OK;<b>false</b> if write operation fails</returns>
         public bool DumpBody(Stream stream)
         {
             if (stream == null)
@@ -340,23 +334,23 @@ namespace anmar.SharpMimeTools
             }
             return !error;
         }
-		
+
         /// <summary>
-		/// Dumps the body of this entity into a file
-		/// </summary>
-		/// <param name="path">path of the destination folder</param>
-		/// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
+        /// Dumps the body of this entity into a file
+        /// </summary>
+        /// <param name="path">path of the destination folder</param>
+        /// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
         public FileInfo DumpBody(String path)
         {
             return DumpBody(path, Name);
         }
-		
+
         /// <summary>
-		/// Dumps the body of this entity into a file
-		/// </summary>
-		/// <param name="path">path of the destination folder</param>
-		/// <param name="generatename">true if the filename must be generated incase we can't find a valid one in the headers</param>
-		/// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
+        /// Dumps the body of this entity into a file
+        /// </summary>
+        /// <param name="path">path of the destination folder</param>
+        /// <param name="generatename">true if the filename must be generated incase we can't find a valid one in the headers</param>
+        /// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
         public FileInfo DumpBody(String path, bool generatename)
         {
             String name = Name;
@@ -364,13 +358,13 @@ namespace anmar.SharpMimeTools
                 name = String.Format("generated_{0}.{1}", GetHashCode(), Header.SubType);
             return DumpBody(path, name);
         }
-		
+
         /// <summary>
-		/// Dumps the body of this entity into a file
-		/// </summary>
-		/// <param name="path">path of the destination folder</param>
-		/// <param name="name">name of the file</param>
-		/// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
+        /// Dumps the body of this entity into a file
+        /// </summary>
+        /// <param name="path">path of the destination folder</param>
+        /// <param name="name">name of the file</param>
+        /// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
         public FileInfo DumpBody(String path, String name)
         {
             FileInfo file = null;
@@ -392,44 +386,38 @@ namespace anmar.SharpMimeTools
                     }
                     if (file != null && dir.Exists)
                     {
-                        if (dir.FullName.Equals(new DirectoryInfo(file.Directory.FullName).FullName))
+                        if (!file.Exists)
                         {
-                            if (!file.Exists)
+                            Stream stream = null;
+                            try
                             {
-                                Stream stream = null;
-                                try
-                                {
-                                    stream = file.Create();
-                                }
-                                catch (Exception e)
-                                {
-                                    Trace.Fail(e.Message, e.StackTrace);
-                                }
-                                bool error = !DumpBody(stream);
-                                if (stream != null)
-                                    stream.Close();
-                                stream = null;
-                                if (error)
-                                {
-                                    if (stream != null)
-                                        file.Delete();
-                                }
-                                else
-                                {
-                                    // The file should be there
-                                    file.Refresh();
-                                    // Set file dates
-                                    if (Header.ContentDispositionParameters.ContainsKey("creation-date"))
-                                        file.CreationTime = SharpMimeTools.parseDate(Header.ContentDispositionParameters["creation-date"]);
-                                    if (Header.ContentDispositionParameters.ContainsKey("modification-date"))
-                                        file.LastWriteTime = SharpMimeTools.parseDate(Header.ContentDispositionParameters["modification-date"]);
-                                    if (Header.ContentDispositionParameters.ContainsKey("read-date"))
-                                        file.LastAccessTime = SharpMimeTools.parseDate(Header.ContentDispositionParameters["read-date"]);
-                                }
+                                stream = file.Create();
+                            }
+                            catch (Exception e)
+                            {
+                                Trace.Fail(e.Message, e.StackTrace);
+                            }
+                            bool error = !DumpBody(stream);
+                            if (stream != null)
+                                stream.Close();
+                            if (!error)
+                            {
+                                // The file should be there
+                                file.Refresh();
+                                // Set file dates
+                                if (Header.ContentDispositionParameters.ContainsKey("creation-date"))
+                                    file.CreationTime =
+                                        SharpMimeTools.parseDate(Header.ContentDispositionParameters["creation-date"]);
+                                if (Header.ContentDispositionParameters.ContainsKey("modification-date"))
+                                    file.LastWriteTime =
+                                        SharpMimeTools.parseDate(
+                                            Header.ContentDispositionParameters["modification-date"]);
+                                if (Header.ContentDispositionParameters.ContainsKey("read-date"))
+                                    file.LastAccessTime =
+                                        SharpMimeTools.parseDate(Header.ContentDispositionParameters["read-date"]);
                             }
                         }
                     }
-                    dir = null;
                 }
                 catch (Exception)
                 {
@@ -451,22 +439,22 @@ namespace anmar.SharpMimeTools
             }
             return file;
         }
-		
+
         /// <summary>
-		/// Returns an enumerator that can iterate through the parts of a multipart entity
-		/// </summary>
-		/// <returns>A <see cref="System.Collections.IEnumerator" /> for the parts of a multipart entity</returns>
+        /// Returns an enumerator that can iterate through the parts of a multipart entity
+        /// </summary>
+        /// <returns>A <see cref="System.Collections.IEnumerator" /> for the parts of a multipart entity</returns>
         public IEnumerator GetEnumerator()
         {
             parse();
             return mi.parts.GetEnumerator();
         }
-		
+
         /// <summary>
-		/// Returns the requested part of a multipart entity
-		/// </summary>
-		/// <param name="index">index of the requested part</param>
-		/// <returns>A <see cref="anmar.SharpMimeTools.SharpMimeMessage" /> for the requested part</returns>
+        /// Returns the requested part of a multipart entity
+        /// </summary>
+        /// <param name="index">index of the requested part</param>
+        /// <returns>A <see cref="anmar.SharpMimeTools.SharpMimeMessage" /> for the requested part</returns>
         public SharpMimeMessage GetPart(int index)
         {
             return Parts[index];
@@ -497,7 +485,7 @@ namespace anmar.SharpMimeTools
         private SharpMimeMessage(SharpMimeMessageStream message, long startpoint, long endpoint)
         {
             this.message = message;
-            mi = new MessageInfo(this.message, startpoint) { end = endpoint };
+            mi = new MessageInfo(this.message, startpoint) {end = endpoint};
         }
 
         private String GetRawBody(bool rawparts)
@@ -520,10 +508,9 @@ namespace anmar.SharpMimeTools
                 return null;
             }
         }
-        
+
         private bool parse()
         {
-            
             if (!IsMultipart || Equals(mi.parts.Parent))
             {
                 return true;
